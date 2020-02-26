@@ -1,6 +1,7 @@
 package dao;
 
 //import com.sun.deploy.util.SessionState;
+import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import model.BankClient;
 
 import java.sql.Connection;
@@ -12,6 +13,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class BankClientDAO {
+    private String Start = "'";
+    private String Final = "', ";
 
     private Connection connection;
 
@@ -103,9 +106,13 @@ public class BankClientDAO {
 
     public void addClient(BankClient client) throws SQLException {
         //блядь, опять войд. чозанах.   ТАК блядь. откуда оно берет id, мать его,! там есть без id конструторы.
-        String  name = client.getName();
+        String  nameT = client.getName();
         Statement statement = connection.createStatement();
-        statement.execute("SELECT * FROM bank_client WHERE name = '" + name + "'");
+        String fromQuery = String.format("SELECT name FROM bank_client WHERE name = '%s';", nameT);
+        System.out.println("я попробовал сделать селект");
+        System.out.println("I is fromQuery string " + fromQuery);
+        statement.execute(fromQuery);
+        //System.out.println("я упал, но ты этого не увидел");
         ResultSet resultSet = statement.getResultSet();
         boolean tmp = resultSet.next();
         if (tmp == true) {
@@ -115,23 +122,22 @@ public class BankClientDAO {
             statement.execute("SELECT max(id) FROM bank_client"); ///вроде так, но я не уверен.
             ResultSet result = statement.getResultSet();
             result.next();
-            long maxId = result.getLong(1);
-            String addClient = "INSERT INTO bank_client VALUES (%d, %s, %s, %d)";
-            Long i = maxId + 1;
-            String tmpName = client.getName();
+            //long maxId = result.getLong(1);
+            //String tmpName = client.getName(); //nameT
             String tmpPassword = client.getPassword();
             Long tmpMoney = client.getMoney();
-            String newS = String.format(addClient, i, tmpName, tmpPassword, tmpMoney);
-            statement.execute(newS);
+            StringBuilder addClient = new StringBuilder("INSERT INTO bank_client (name, password, money) VALUES (").append(Start).append(nameT).append(Final).append(Start).
+                    append(tmpPassword).append(Final).append(tmpMoney).append(");");
+            //System.out.println("this is add Client! " + addClient);
+            statement.execute(addClient.toString());
             statement.close();
         }
-
-
     }
 
     public void createTable() throws SQLException {
         Statement stmt = connection.createStatement();
-        stmt.execute("create table if not exists bank_client (id bigint auto_increment, name varchar(256), password varchar(256), money bigint, primary key (id))");
+        //stmt.execute("create table if not exists bank_client (id bigint auto_increment, name varchar(256), password varchar(256), money bigint, primary key (id))");
+        stmt.execute("create table if not exists bank_client (ID INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(256), password varchar(256), money bigint)");
         stmt.close();
     }
 

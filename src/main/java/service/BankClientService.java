@@ -36,8 +36,18 @@ public class BankClientService {
     }
 
     public boolean addClient(BankClient client) throws DBException {
+        //return false;
+        BankClientDAO dao = getBankClientDAO();
+        try {
+            dao.addClient(client);  //падаем тут.
+            return true;
+        }
+        catch (SQLException e) {
+            System.out.println("сорян, посоны. скьюель ексцепсен!");
+            System.out.println(e);
+            return false;
+        }
 
-        return false;
     }
 
     public boolean sendMoneyToClient(BankClient sender, String name, Long value) {
@@ -62,7 +72,31 @@ public class BankClientService {
     }
 
     private static Connection getMysqlConnection() {
-        //jdbc:sqlite:sqlite_database_file_path
+        String connectionString = "jdbc:sqlite:/home/namor/test_sqlite.sql";
+        String driverName = "org.sqlite.JDBC";
+
+        try {
+            Class.forName(driverName);
+        }
+        catch (ClassNotFoundException e) {
+            System.out.println("Can't get class. No driver found");
+            e.printStackTrace();
+            //return;
+        }
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(connectionString);
+            System.out.println("I try get connection!");
+            return connection;
+        }
+        catch (SQLException e) {
+            System.out.println("Can't get connection. Incorrect URL");
+            e.printStackTrace();
+            throw new IllegalStateException();
+            //return;
+        }
+
+        /*
         try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
@@ -83,7 +117,7 @@ public class BankClientService {
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new IllegalStateException();
-        }
+        }*/
     }
 
     private static BankClientDAO getBankClientDAO() {

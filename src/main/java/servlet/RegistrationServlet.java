@@ -1,5 +1,8 @@
 package servlet;
 
+import com.sun.security.ntlm.Client;
+import exception.DBException;
+import model.BankClient;
 import service.BankClientService;
 import util.PageGenerator;
 
@@ -27,12 +30,24 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPost(req, resp);
-        //String tmpName = req.getParameter("name");
-        //String tmpPassword = req.getParameter("password");
-        //String tmpMoney = req.getParameter("money");
-        //Long tmpMoney2 = Long.parseLong(tmpMoney);
-        //new BankClientService().addClient(tmpName, tmpPassword, tmpMoney2);
+        //super.doPost(req, resp);
+        String tmpName = req.getParameter("name");
+        String tmpPassword = req.getParameter("password");
+        String tmpMoney = req.getParameter("money");
+        Long tmpMoney2 = Long.parseLong(tmpMoney);
+        //видимо, передать методу готового клиента. ибо там принимается именно что клиент.
+        BankClient client = null;
+        try {
+            client = new BankClient(tmpName, tmpPassword, tmpMoney2);
+            System.out.println("в РегСервлет успешно создан новый клиент!");
+        } catch (Exception e) {
+            System.out.println("cjhzy");
+        }
+        try {
+            new BankClientService().addClient(client); //!! вернуть результ!!
+        } catch (DBException e) {
+            e.printStackTrace();
+        }
     }
 
 
