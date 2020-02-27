@@ -30,24 +30,34 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //super.doPost(req, resp);
+        Map<String, Object> pageVariables = createPageVariablesMap(req);
         String tmpName = req.getParameter("name");
         String tmpPassword = req.getParameter("password");
         String tmpMoney = req.getParameter("money");
         Long tmpMoney2 = Long.parseLong(tmpMoney);
-        //видимо, передать методу готового клиента. ибо там принимается именно что клиент.
         BankClient client = null;
         try {
             client = new BankClient(tmpName, tmpPassword, tmpMoney2);
             System.out.println("в РегСервлет успешно создан новый клиент!");
+//            request.setAttribute("message", message);
+//            req.setAttribute("message", "Add client successful");
         } catch (Exception e) {
             System.out.println("cjhzy");
         }
         try {
-            new BankClientService().addClient(client); //!! вернуть результ!!
+            boolean sw =  new BankClientService().addClient(client); //планирую навелосипедить. если тут определённое имя - кидать ошибку ерр
+            if(sw == true) {
+                pageVariables.put("message", "Add client successful");
+            } else {pageVariables.put("message", "Client not add");}
+
         } catch (DBException e) {
+            pageVariables.put("message", "Client not add");
             e.printStackTrace();
         }
+
+        resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
+        resp.setContentType("text/html; charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
 

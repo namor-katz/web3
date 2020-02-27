@@ -64,7 +64,7 @@ public class BankClientDAO {
     public boolean isClientHasSum(String name, Long expectedSum) throws SQLException {
         //проверка на то, есть ли у клиента та сумма, которую он якобы хочет перевести.
         Statement statement = connection.createStatement();
-        statement.execute("SELECT money FROM bank_client WHERE name = '" + name + "'");
+        statement.execute("SELECT money FROM bank_client WHERE name = '" + name + "';");
         ResultSet result = statement.getResultSet();
         if (result.next() == false) return false;
 
@@ -110,7 +110,7 @@ public class BankClientDAO {
         Statement statement = connection.createStatement();
         String fromQuery = String.format("SELECT name FROM bank_client WHERE name = '%s';", nameT);
         System.out.println("я попробовал сделать селект");
-        System.out.println("I is fromQuery string " + fromQuery);
+        //System.out.println("I is fromQuery string " + fromQuery);
         statement.execute(fromQuery);
         //System.out.println("я упал, но ты этого не увидел");
         ResultSet resultSet = statement.getResultSet();
@@ -119,9 +119,9 @@ public class BankClientDAO {
             System.out.println("this user is exist");
         }
         else {
-            statement.execute("SELECT max(id) FROM bank_client"); ///вроде так, но я не уверен.
-            ResultSet result = statement.getResultSet();
-            result.next();
+            //statement.execute("SELECT max(id) FROM bank_client"); ///вроде так, но я не уверен.
+            //ResultSet result = statement.getResultSet();
+            //result.next();
             //long maxId = result.getLong(1);
             //String tmpName = client.getName(); //nameT
             String tmpPassword = client.getPassword();
