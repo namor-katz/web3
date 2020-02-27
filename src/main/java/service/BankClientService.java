@@ -8,11 +8,24 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BankClientService {
 
     public BankClientService() {
+    }
+
+    public boolean validateClient(String name, String password) {
+        //этот метод проверяет, есть ли указанный клиент в бд. если да - вернуть true. и не добавлять!
+        BankClientDAO dao = getBankClientDAO();
+        boolean result;
+        try {
+            result = dao.validateClient(name, password);
+            return result;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     public BankClient getClientById(long id) throws DBException {
@@ -28,7 +41,15 @@ public class BankClientService {
     }
 
     public List<BankClient> getAllClient() {
-        return  null;
+        ArrayList<BankClient> bk = new ArrayList<>();
+        BankClientDAO dao = getBankClientDAO();
+        try {
+            bk = (ArrayList<BankClient>) dao.getAllBankClient();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return bk;
     }
 
     public boolean deleteClient(String name) {
@@ -62,6 +83,7 @@ public class BankClientService {
             throw new DBException(e);
         }
     }
+
     public void createTable() throws DBException{
         BankClientDAO dao = getBankClientDAO();
         try {
@@ -86,38 +108,14 @@ public class BankClientService {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(connectionString);
-            System.out.println("I try get connection!");
+         //   System.out.println("I try get connection!");
             return connection;
         }
         catch (SQLException e) {
             System.out.println("Can't get connection. Incorrect URL");
             e.printStackTrace();
             throw new IllegalStateException();
-            //return;
         }
-
-        /*
-        try {
-            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
-
-            StringBuilder url = new StringBuilder();
-
-            url.
-                    append("jdbc:mysql://").        //db type
-                    append("localhost:").           //host name
-                    append("3306/").                //port
-                    append("test").          //db name
-                    append("user=newuser&").          //login
-                    append("password=user_password");       //password //!! возможно, тут не проканает амперсанд или пустой пароль. хотя воркбенч пашет.
-
-            System.out.println("URL: " + url + "\n");
-
-            Connection connection = DriverManager.getConnection(url.toString());
-            return connection;
-        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new IllegalStateException();
-        }*/
     }
 
     private static BankClientDAO getBankClientDAO() {

@@ -1,6 +1,7 @@
 package servlet;
 
 import com.sun.security.ntlm.Client;
+import dao.BankClientDAO;
 import exception.DBException;
 import model.BankClient;
 import service.BankClientService;
@@ -39,16 +40,19 @@ public class RegistrationServlet extends HttpServlet {
         try {
             client = new BankClient(tmpName, tmpPassword, tmpMoney2);
             System.out.println("в РегСервлет успешно создан новый клиент!");
-//            request.setAttribute("message", message);
-//            req.setAttribute("message", "Add client successful");
         } catch (Exception e) {
             System.out.println("cjhzy");
         }
         try {
-            boolean sw =  new BankClientService().addClient(client); //планирую навелосипедить. если тут определённое имя - кидать ошибку ерр
-            if(sw == true) {
+            boolean isEx = new BankClientService().validateClient(tmpName, tmpPassword);
+            if(isEx == true) {
+                System.out.println("Я тут, но почему не НОТ адд?");
+                pageVariables.put("message", "Client not add");
+            }
+            else {
+                new BankClientService().addClient(client); //планирую навелосипедить. если тут определённое имя - кидать ошибку ерр
                 pageVariables.put("message", "Add client successful");
-            } else {pageVariables.put("message", "Client not add");}
+            }
 
         } catch (DBException e) {
             pageVariables.put("message", "Client not add");

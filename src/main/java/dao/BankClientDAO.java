@@ -23,7 +23,7 @@ public class BankClientDAO {
     }
 
     public List<BankClient> getAllBankClient() throws SQLException {
-
+        System.out.println("Я вО всех клиентах!");
         Statement statement = connection.createStatement();
         statement.execute("SELECT * FROM bank_client");
         ResultSet result = statement.getResultSet();
@@ -36,9 +36,10 @@ public class BankClientDAO {
     public boolean validateClient(String name, String password) throws SQLException {
         //ЯННП, но, видимо, проверка пары логинъ=-пароль.
         Statement statement = connection.createStatement();
-        statement.execute("select * from bank_client where name = '" + name + "'" + "AND password = '" + password + "'");
+        statement.execute("select * from bank_client where name = '" + name + "';");    // + "AND password = '" + password + "';");
         ResultSet resultSet = statement.getResultSet();
-        return resultSet.next();
+        //statement.close();
+        return resultSet.next(); //если что-то ессть, верну тру. т.е. после этого делать ничего не надо будет.
     }
 
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
@@ -105,33 +106,14 @@ public class BankClientDAO {
     }
 
     public void addClient(BankClient client) throws SQLException {
-        //блядь, опять войд. чозанах.   ТАК блядь. откуда оно берет id, мать его,! там есть без id конструторы.
         String  nameT = client.getName();
         Statement statement = connection.createStatement();
-        String fromQuery = String.format("SELECT name FROM bank_client WHERE name = '%s';", nameT);
-        System.out.println("я попробовал сделать селект");
-        //System.out.println("I is fromQuery string " + fromQuery);
-        statement.execute(fromQuery);
-        //System.out.println("я упал, но ты этого не увидел");
-        ResultSet resultSet = statement.getResultSet();
-        boolean tmp = resultSet.next();
-        if (tmp == true) {
-            System.out.println("this user is exist");
-        }
-        else {
-            //statement.execute("SELECT max(id) FROM bank_client"); ///вроде так, но я не уверен.
-            //ResultSet result = statement.getResultSet();
-            //result.next();
-            //long maxId = result.getLong(1);
-            //String tmpName = client.getName(); //nameT
             String tmpPassword = client.getPassword();
             Long tmpMoney = client.getMoney();
             StringBuilder addClient = new StringBuilder("INSERT INTO bank_client (name, password, money) VALUES (").append(Start).append(nameT).append(Final).append(Start).
                     append(tmpPassword).append(Final).append(tmpMoney).append(");");
-            //System.out.println("this is add Client! " + addClient);
             statement.execute(addClient.toString());
             statement.close();
-        }
     }
 
     public void createTable() throws SQLException {
