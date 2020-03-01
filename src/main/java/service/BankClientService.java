@@ -9,6 +9,7 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BankClientService {
@@ -36,19 +37,25 @@ public class BankClientService {
         }
     }
 
-    public BankClient getClientByName(String name) {
-        return null;
+    public BankClient getClientByName(String name) throws DBException {
+        try {
+            return getBankClientDAO().getClientByName(name);
+        } catch (SQLException e) {
+            System.out.println("что то пошло не так в getclientByName");
+            throw new DBException(e);
+        }
     }
 
     public List<BankClient> getAllClient() {
-        ArrayList<BankClient> bk = new ArrayList<>();
+        //System.out.println("старт getAllClient of BankClientService");
+        LinkedList<BankClient> bk;// = new ArrayList<>();
         BankClientDAO dao = getBankClientDAO();
         try {
-            bk = (ArrayList<BankClient>) dao.getAllBankClient();
+            bk = (LinkedList<BankClient>) dao.getAllBankClient();
         } catch (SQLException e) {
+            bk = null;
             e.printStackTrace();
         }
-
         return bk;
     }
 
@@ -57,10 +64,9 @@ public class BankClientService {
     }
 
     public boolean addClient(BankClient client) throws DBException {
-        //return false;
         BankClientDAO dao = getBankClientDAO();
         try {
-            dao.addClient(client);  //падаем тут.
+            dao.addClient(client);
             return true;
         }
         catch (SQLException e) {
@@ -71,8 +77,22 @@ public class BankClientService {
 
     }
 
-    public boolean sendMoneyToClient(BankClient sender, String name, Long value) {
-        return false;
+    public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws SQLException {
+        Long sum = sender.getMoney();//это переводим
+        if (sum < value) {
+            System.out.println("на счету недостаточно денег!");
+            return false;
+        }
+        else {
+            BankClientDAO dao = getBankClientDAO();
+            BankClient acceptor = dao.getClientByName(name);
+            Long acceptor_sum = acceptor.getMoney();
+            Long diff_sender = sum - value;
+            sender.setMoney(diff_sender);
+            Long diff_acceptor = acceptor_sum + value;
+            acceptor.setMoney(diff_acceptor);
+            return true;
+        }
     }
 
     public void cleanUp() throws DBException {

@@ -1,5 +1,6 @@
 package servlet;
 
+import exception.DBException;
 import model.BankClient;
 import service.BankClientService;
 import util.PageGenerator;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,16 +23,42 @@ public class MoneyTransactionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, Object> pageVariables = createPageVariablesMap(req);
-///        PageGenerator.getInstance().getPage("moneyTransactionPage.html", pageVariables);
-        resp.getWriter().println(PageGenerator.getInstance().getPage("registrationPage.html", pageVariables));
+        resp.getWriter().println(PageGenerator.getInstance().getPage("moneyTransactionPage.html", pageVariables));
         resp.setContentType("text/html; charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //bankClientService.sendMoneyToClient();
-        super.doPost(req, resp);
+        Map<String, Object> pageVariables = createPageVariablesMap(req);
+        String sender = req.getParameter("senderName");
+        String password = req.getParameter("senderPass");
+        Long money = Long.parseLong(req.getParameter("count"));
+        String acceptor = req.getParameter("NameTo");
+        BankClient senderU = null;
+        String result = "";
+        boolean clientISExists;
+        boolean successTransaction;
+        try {
+            BankClient senserU = bankClientService.getClientByName(sender);
+            clientISExists = true;
+        }
+        catch (DBException e) {
+            clientISExists = false;
+            e.printStackTrace();
+        }
+
+        try {
+            successTransaction =  bankClientService.sendMoneyToClient(senderU, acceptor, money);
+            result = "The transaction was successful";
+        } catch (SQLException e) {
+            result = "transaction rejected";
+            e.printStackTrace();
+        }
+
+        pageVariables.put("message", result);
+        resp.setContentType("text/html; charset=utf-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
 
     private static Map<String, Object> createPageVariablesMap(HttpServletRequest request) {

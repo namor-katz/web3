@@ -21,7 +21,12 @@ public class ApiServlet extends HttpServlet {
         if (req.getPathInfo().contains("all")) {
             json = gson.toJson(bankClientService.getAllClient());
         } else {
-            json = gson.toJson(bankClientService.getClientByName(req.getParameter("name")));
+            try {
+                json = gson.toJson(bankClientService.getClientByName(req.getParameter("name")));
+            } catch (DBException e) {
+                json = ""; //тут не хотело работать из за изменения в банк клиент сервисе. пришлось добавить трюкач
+                e.printStackTrace();
+            }
         }
         resp.getWriter().write(json);
         resp.setStatus(200);
@@ -31,7 +36,6 @@ public class ApiServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //super.doPost(req, resp);
         System.out.println("почему не вызываешь?!");
-
     }
 
     @Override

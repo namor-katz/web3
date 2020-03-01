@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public class BankClientDAO {
@@ -23,14 +24,21 @@ public class BankClientDAO {
     }
 
     public List<BankClient> getAllBankClient() throws SQLException {
-        System.out.println("Я вО всех клиентах!");
         Statement statement = connection.createStatement();
-        statement.execute("SELECT * FROM bank_client");
+        statement.execute("SELECT id, name, password, money FROM bank_client");
         ResultSet result = statement.getResultSet();
-        result.next();
 
-        ArrayList<BankClient> fromReturn = new ArrayList<BankClient>((Collection<? extends BankClient>) result);
-        return fromReturn;
+        List AllUsers = new LinkedList();
+
+        while (result.next()) {
+            long id = result.getLong("id");
+            String name = result.getString("name");
+            String password = result.getString("password");
+            Long money = result.getLong("money");
+            BankClient bankClient = new BankClient(id, name, password, money);
+            AllUsers.add(bankClient);
+        }
+        return AllUsers;
     }
 
     public boolean validateClient(String name, String password) throws SQLException {
@@ -76,7 +84,6 @@ public class BankClientDAO {
         else {
             return false;
         }
-
     }
 
     public long getClientIdByName(String name) throws SQLException {
@@ -91,17 +98,18 @@ public class BankClientDAO {
     }
 
     public BankClient getClientByName(String name) throws SQLException {
-        //return null;
         Statement statement = connection.createStatement();
-        statement.execute("SELECT * from bank_client WHERE name = '" + name + "'");
+        statement.execute("SELECT * from bank_client WHERE name = '" + name + "';");
         ResultSet result = statement.getResultSet();
         result.next();
-        long tmpId = result.getLong("id");
+//        long tmpId = result.getLong("id");
         String tmpName = result.getString("name");
         String tmpPassword = result.getString("password");
         Long tmpMoney = result.getLong("money");
 
-        BankClient bankClient = new BankClient(tmpId, tmpName, tmpPassword, tmpMoney);
+        BankClient bankClient = new BankClient(tmpName, tmpPassword, tmpMoney);
+        result.close();
+        statement.close();
         return bankClient;
     }
 

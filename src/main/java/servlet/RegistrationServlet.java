@@ -40,23 +40,38 @@ public class RegistrationServlet extends HttpServlet {
         try {
             client = new BankClient(tmpName, tmpPassword, tmpMoney2);
             System.out.println("в РегСервлет успешно создан новый клиент!");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("cjhzy");
         }
+
         try {
-            boolean isEx = new BankClientService().validateClient(tmpName, tmpPassword);
-            if(isEx == true) {
-                System.out.println("Я тут, но почему не НОТ адд?");
+//            boolean isEx = new BankClientService().validateClient(tmpName, tmpPassword);
+            String isName = null;
+            isName = new BankClientService().getClientByName(tmpName).getName();
+            System.out.println("я это клиент!!!! " + isName);
+            if(isName.equals(tmpName)) {
+                System.out.println("строка 54, я тут потому что такой клиент уже есть.");
                 pageVariables.put("message", "Client not add");
             }
             else {
-                new BankClientService().addClient(client); //планирую навелосипедить. если тут определённое имя - кидать ошибку ерр
+                System.out.println("щас добавим клиента" + client.getName());
+                new BankClientService().addClient(client);
                 pageVariables.put("message", "Add client successful");
             }
 
-        } catch (DBException e) {
-            pageVariables.put("message", "Client not add");
-            e.printStackTrace();
+        } catch (DBException e) { //получается из SQLITEexception когда в дао зарпашивается по имени юзер, которого нет. а
+            //если нет, то его можно и нужно добавлять.
+
+            try {
+                new BankClientService().addClient(client);
+                pageVariables.put("message", "Add client successful");
+                System.out.println("добавляем в катче");
+            }
+            catch (DBException ex) {
+                ex.printStackTrace();
+            }
+//            e.printStackTrace();
         }
 
         resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
