@@ -4,10 +4,7 @@ package dao;
 import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import model.BankClient;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,18 +47,20 @@ public class BankClientDAO {
     }
 
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
-        //оч странно. войд. а типа возвращать результат - успешно добавили, не успешно - не надо?
-        Statement statement = connection.createStatement();
-//        statement.execute("UPDATE bank_client SET money = money + '" + transactValue + "'" + "WHERE name = '" + name + "'");
-        statement.execute("UPDATE bank_client SET money = '" + transactValue + "'" + "WHERE name = '" + name + "'");
-        statement.close();
+        String query = "UPDATE bank_client SET money=? WHERE name=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setLong(1, transactValue);
+        preparedStatement.setString(2, name);
+        int rowsAffected = preparedStatement.executeUpdate();
     }
 
     public BankClient getClientById(long id) throws SQLException {
-        Statement stmt = connection.createStatement();
-        stmt.execute("select * from bank_client where id = '" + id + "'");
-        ResultSet result = stmt.getResultSet();
-        result.next();  //это по факту позиционирование на 1 строку
+        //Statement stmt = connection.createStatement();
+        String query = "SELECT * FROM bank_client WHERE id=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setLong(1, id);
+        ResultSet result = preparedStatement.executeQuery(query);
+        result.next();
         long idTmp = result.getInt("id");
         String nameTmp = result.getString("name");
         String passwordTmp = result.getString("password");
@@ -98,17 +97,19 @@ public class BankClientDAO {
     }
 
     public BankClient getClientByName(String name) throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.execute("SELECT * from bank_client WHERE name = '" + name + "';");
-        ResultSet result = statement.getResultSet();
+        String query = "SELECT * FROM bank_client WHERE name=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        System.out.println("щас упаду");
+        preparedStatement.setString(1, name);
+        ResultSet result = preparedStatement.executeQuery();//нет, тут. как будто не происходит подстановка.
         result.next();
+
         String tmpName = result.getString("name");
         String tmpPassword = result.getString("password");
         Long tmpMoney = result.getLong("money");
 
         BankClient bankClient = new BankClient(tmpName, tmpPassword, tmpMoney);
         result.close();
-        statement.close();
         return bankClient;
     }
 
