@@ -18,7 +18,6 @@ public class BankClientService {
     }
 
     public boolean validateClient(String name, String password) {
-        //этот метод проверяет, есть ли указанный клиент в бд. если да - вернуть true. и не добавлять!
         BankClientDAO dao = getBankClientDAO();
         boolean result;
         try {
@@ -79,6 +78,7 @@ public class BankClientService {
 
     public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws SQLException {
         Long sum = sender.getMoney();//это переводим
+        Long diff_sender = sum - value;
         if (sum < value) {
             System.out.println("на счету недостаточно денег!");
             return false;
@@ -87,10 +87,18 @@ public class BankClientService {
             BankClientDAO dao = getBankClientDAO();
             BankClient acceptor = dao.getClientByName(name);
             Long acceptor_sum = acceptor.getMoney();
-            Long diff_sender = sum - value;
-            sender.setMoney(diff_sender);
             Long diff_acceptor = acceptor_sum + value;
-            acceptor.setMoney(diff_acceptor);
+          //  System.out.println("я отправитель. и после перевода у меня вот столько денег осталось." + sender.getMoney());
+            try {
+                dao.updateClientsMoney(acceptor.getName(), acceptor.getPassword(), diff_acceptor);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                dao.updateClientsMoney(sender.getName(), sender.getPassword(), diff_sender);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return true;
         }
     }

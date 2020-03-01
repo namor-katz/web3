@@ -46,7 +46,6 @@ public class RegistrationServlet extends HttpServlet {
         }
 
         try {
-//            boolean isEx = new BankClientService().validateClient(tmpName, tmpPassword);
             String isName = null;
             isName = new BankClientService().getClientByName(tmpName).getName();
             System.out.println("я это клиент!!!! " + isName);

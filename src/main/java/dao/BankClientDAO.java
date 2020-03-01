@@ -42,7 +42,6 @@ public class BankClientDAO {
     }
 
     public boolean validateClient(String name, String password) throws SQLException {
-        //ЯННП, но, видимо, проверка пары логинъ=-пароль.
         Statement statement = connection.createStatement();
         statement.execute("select * from bank_client where name = '" + name + "';");    // + "AND password = '" + password + "';");
         ResultSet resultSet = statement.getResultSet();
@@ -53,7 +52,8 @@ public class BankClientDAO {
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
         //оч странно. войд. а типа возвращать результат - успешно добавили, не успешно - не надо?
         Statement statement = connection.createStatement();
-        statement.execute("UPDATE bank_client SET money = money + '" + transactValue + "'" + "WHERE name = '" + name + "'");
+//        statement.execute("UPDATE bank_client SET money = money + '" + transactValue + "'" + "WHERE name = '" + name + "'");
+        statement.execute("UPDATE bank_client SET money = '" + transactValue + "'" + "WHERE name = '" + name + "'");
         statement.close();
     }
 
@@ -102,7 +102,6 @@ public class BankClientDAO {
         statement.execute("SELECT * from bank_client WHERE name = '" + name + "';");
         ResultSet result = statement.getResultSet();
         result.next();
-//        long tmpId = result.getLong("id");
         String tmpName = result.getString("name");
         String tmpPassword = result.getString("password");
         Long tmpMoney = result.getLong("money");

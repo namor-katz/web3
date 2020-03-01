@@ -34,13 +34,13 @@ public class MoneyTransactionServlet extends HttpServlet {
         String sender = req.getParameter("senderName");
         String password = req.getParameter("senderPass");
         Long money = Long.parseLong(req.getParameter("count"));
-        String acceptor = req.getParameter("NameTo");
+        String acceptor = req.getParameter("nameTo");
         BankClient senderU = null;
         String result = "";
         boolean clientISExists;
         boolean successTransaction;
         try {
-            BankClient senserU = bankClientService.getClientByName(sender);
+            senderU = bankClientService.getClientByName(sender);
             clientISExists = true;
         }
         catch (DBException e) {
@@ -50,13 +50,17 @@ public class MoneyTransactionServlet extends HttpServlet {
 
         try {
             successTransaction =  bankClientService.sendMoneyToClient(senderU, acceptor, money);
-            result = "The transaction was successful";
+            if (successTransaction == true) result = "The transaction was successful";
+            else {
+                result ="transaction rejected";
+            }
         } catch (SQLException e) {
             result = "transaction rejected";
             e.printStackTrace();
         }
 
         pageVariables.put("message", result);
+        resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
         resp.setContentType("text/html; charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
     }

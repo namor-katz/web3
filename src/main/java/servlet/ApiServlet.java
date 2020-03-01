@@ -35,7 +35,7 @@ public class ApiServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //super.doPost(req, resp);
-        System.out.println("почему не вызываешь?!");
+        System.out.println(" Я апи ПОСТ. почему не вызываешь?!");
     }
 
     @Override
