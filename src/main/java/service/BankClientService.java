@@ -79,12 +79,18 @@ public class BankClientService {
     public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws SQLException {
         Long sum = sender.getMoney();//это переводим
         Long diff_sender = sum - value;
+        String sender_name = sender.getName();
+        String sender_password = sender.getPassword();
         if (sum < value) {
             System.out.println("на счету недостаточно денег!");
             return false;
         }
         else {
             BankClientDAO dao = getBankClientDAO();
+            boolean isClientTrue;
+            isClientTrue = dao.validateClient(sender_name, sender_password);
+            if(isClientTrue == false) return false;
+
             BankClient acceptor = dao.getClientByName(name);
             Long acceptor_sum = acceptor.getMoney();
             Long diff_acceptor = acceptor_sum + value;

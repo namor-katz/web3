@@ -39,11 +39,12 @@ public class BankClientDAO {
     }
 
     public boolean validateClient(String name, String password) throws SQLException {
-        Statement statement = connection.createStatement();
-        statement.execute("select * from bank_client where name = '" + name + "';");    // + "AND password = '" + password + "';");
-        ResultSet resultSet = statement.getResultSet();
-        //statement.close();
-        return resultSet.next(); //если что-то ессть, верну тру. т.е. после этого делать ничего не надо будет.
+        String query = "SELECT * FROM bank_client WHERE name=? AND password=?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, password);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet.next(); //если что-то ессть, верну тру.
     }
 
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
@@ -59,7 +60,7 @@ public class BankClientDAO {
         String query = "SELECT * FROM bank_client WHERE id=?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setLong(1, id);
-        ResultSet result = preparedStatement.executeQuery(query);
+        ResultSet result = preparedStatement.executeQuery();
         result.next();
         long idTmp = result.getInt("id");
         String nameTmp = result.getString("name");
@@ -114,6 +115,7 @@ public class BankClientDAO {
     }
 
     public void addClient(BankClient client) throws SQLException {
+        String query = "INSERT INTO bank";
         String  nameT = client.getName();
         Statement statement = connection.createStatement();
             String tmpPassword = client.getPassword();
