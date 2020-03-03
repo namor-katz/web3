@@ -21,10 +21,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, Object> pageVariables = createPageVariablesMap(req);
-//        PageGenerator.getInstance().getPage("registrationPage.html", pageVariables);  //с пустым словарём нихуя не работает!
-
         resp.getWriter().println(PageGenerator.getInstance().getPage("registrationPage.html", pageVariables));
-
         resp.setContentType("text/html; charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
@@ -39,7 +36,6 @@ public class RegistrationServlet extends HttpServlet {
         BankClient client = null;
         try {
             client = new BankClient(tmpName, tmpPassword, tmpMoney2);
-            System.out.println("в РегСервлет успешно создан новый клиент!");
         }
         catch (Exception e) {
             System.out.println("cjhzy");
@@ -48,29 +44,23 @@ public class RegistrationServlet extends HttpServlet {
         try {
             String isName = null;
             isName = new BankClientService().getClientByName(tmpName).getName();
-            System.out.println("я это клиент!!!! " + isName);
             if(isName.equals(tmpName)) {
-                System.out.println("строка 54, я тут потому что такой клиент уже есть.");
                 pageVariables.put("message", "Client not add");
             }
             else {
-                System.out.println("щас добавим клиента" + client.getName());
                 new BankClientService().addClient(client);
                 pageVariables.put("message", "Add client successful");
             }
 
-        } catch (DBException e) { //получается из SQLITEexception когда в дао зарпашивается по имени юзер, которого нет. а
-            //если нет, то его можно и нужно добавлять.
+        } catch (DBException e) {
 
             try {
                 new BankClientService().addClient(client);
                 pageVariables.put("message", "Add client successful");
-                System.out.println("добавляем в катче");
             }
             catch (DBException ex) {
                 ex.printStackTrace();
             }
-//            e.printStackTrace();
         }
 
         resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
@@ -88,7 +78,6 @@ public class RegistrationServlet extends HttpServlet {
         pageVariables.put("parameters", request.getParameterMap().toString());
         pageVariables.put("email", request.getParameter("email"));
         pageVariables.put("password", request.getParameter("password"));
-//        String tmp0 = request.getParameter("value");  //example
         return pageVariables;
     }
 }

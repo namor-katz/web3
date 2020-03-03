@@ -74,7 +74,6 @@ public class MoneyTransactionServlet extends HttpServlet {
         pageVariables.put("parameters", request.getParameterMap().toString());
         pageVariables.put("email", request.getParameter("email"));
         pageVariables.put("password", request.getParameter("password"));
-//        String tmp0 = request.getParameter("value");  //example
         return pageVariables;
     }
 

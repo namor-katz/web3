@@ -40,14 +40,12 @@ public class BankClientService {
         try {
             return getBankClientDAO().getClientByName(name);
         } catch (SQLException e) {
-            System.out.println("что то пошло не так в getclientByName");
             throw new DBException(e);
         }
     }
 
     public List<BankClient> getAllClient() {
-        //System.out.println("старт getAllClient of BankClientService");
-        LinkedList<BankClient> bk;// = new ArrayList<>();
+        LinkedList<BankClient> bk;
         BankClientDAO dao = getBankClientDAO();
         try {
             bk = (LinkedList<BankClient>) dao.getAllBankClient();
@@ -69,7 +67,6 @@ public class BankClientService {
             return true;
         }
         catch (SQLException e) {
-            System.out.println("сорян, посоны. скьюель ексцепсен!");
             System.out.println(e);
             return false;
         }
@@ -77,12 +74,11 @@ public class BankClientService {
     }
 
     public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws SQLException {
-        Long sum = sender.getMoney();//это переводим
+        Long sum = sender.getMoney();
         Long diff_sender = sum - value;
         String sender_name = sender.getName();
         String sender_password = sender.getPassword();
         if (sum < value) {
-            System.out.println("на счету недостаточно денег!");
             return false;
         }
         else {
@@ -94,7 +90,6 @@ public class BankClientService {
             BankClient acceptor = dao.getClientByName(name);
             Long acceptor_sum = acceptor.getMoney();
             Long diff_acceptor = acceptor_sum + value;
-          //  System.out.println("я отправитель. и после перевода у меня вот столько денег осталось." + sender.getMoney());
             try {
                 dao.updateClientsMoney(acceptor.getName(), acceptor.getPassword(), diff_acceptor);
             } catch (Exception e) {
@@ -135,18 +130,14 @@ public class BankClientService {
             Class.forName(driverName);
         }
         catch (ClassNotFoundException e) {
-            System.out.println("Can't get class. No driver found");
             e.printStackTrace();
-            //return;
         }
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(connectionString);
-         //   System.out.println("I try get connection!");
             return connection;
         }
         catch (SQLException e) {
-            System.out.println("Can't get connection. Incorrect URL");
             e.printStackTrace();
             throw new IllegalStateException();
         }

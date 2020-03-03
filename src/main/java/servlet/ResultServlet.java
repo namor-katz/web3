@@ -15,7 +15,6 @@ import java.util.Map;
 public class ResultServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        super.doGet(req, resp);
         Map<String, Object> pageVariables = createPageVariablesMap(req);
         resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
         resp.setContentType("text/html; charset=utf-8");
@@ -31,7 +30,6 @@ public class ResultServlet extends HttpServlet {
         pageVariables.put("parameters", request.getParameterMap().toString());
         pageVariables.put("email", request.getParameter("email"));
         pageVariables.put("password", request.getParameter("password"));
-//        String tmp0 = request.getParameter("value");  //example
         return pageVariables;
     }
 }

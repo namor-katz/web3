@@ -1,7 +1,5 @@
 package dao;
 
-//import com.sun.deploy.util.SessionState;
-import com.sun.xml.internal.ws.api.model.wsdl.WSDLOutput;
 import model.BankClient;
 
 import java.sql.*;
@@ -44,7 +42,7 @@ public class BankClientDAO {
         preparedStatement.setString(1, name);
         preparedStatement.setString(2, password);
         ResultSet resultSet = preparedStatement.executeQuery();
-        return resultSet.next(); //если что-то ессть, верну тру.
+        return resultSet.next();
     }
 
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
@@ -71,13 +69,12 @@ public class BankClientDAO {
     }
 
     public boolean isClientHasSum(String name, Long expectedSum) throws SQLException {
-        //проверка на то, есть ли у клиента та сумма, которую он якобы хочет перевести.
         Statement statement = connection.createStatement();
         statement.execute("SELECT money FROM bank_client WHERE name = '" + name + "';");
         ResultSet result = statement.getResultSet();
         if (result.next() == false) return false;
 
-        Long tmpMoney = result.getLong(1); //тут, может быть, не так всё. нужно посмотреть. ибо в примере они дёргают не отдельную колонку, а ВСЁ. нахуа?
+        Long tmpMoney = result.getLong(1);
         if (tmpMoney > expectedSum) {
             return true;
         }
@@ -102,7 +99,7 @@ public class BankClientDAO {
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         System.out.println("щас упаду");
         preparedStatement.setString(1, name);
-        ResultSet result = preparedStatement.executeQuery();//нет, тут. как будто не происходит подстановка.
+        ResultSet result = preparedStatement.executeQuery();
         result.next();
 
         String tmpName = result.getString("name");
@@ -128,7 +125,6 @@ public class BankClientDAO {
 
     public void createTable() throws SQLException {
         Statement stmt = connection.createStatement();
-        //stmt.execute("create table if not exists bank_client (id bigint auto_increment, name varchar(256), password varchar(256), money bigint, primary key (id))");
         stmt.execute("create table if not exists bank_client (ID INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(256), password varchar(256), money bigint)");
         stmt.close();
     }

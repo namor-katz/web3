@@ -24,12 +24,8 @@ public class Main {
         context.addServlet(new ServletHolder(moneyTransactionServlet), "/transaction");
         context.addServlet(new ServletHolder(resultServlet), "/result");
 
-//        context.addServlet(new ServletHolder(loginServlet), "/login");
-
         Server server = new Server(8080);
         server.setHandler(context);
-
-
 
         server.start();
         server.join();
