@@ -46,15 +46,15 @@ public class BankClientDAO {
     }
 
     public void updateClientsMoney(String name, String password, Long transactValue) throws Exception {
-        String query = "UPDATE bank_client SET money=? WHERE name=?";
+        String query = "UPDATE bank_client SET money=? WHERE name=? AND password=?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setLong(1, transactValue);
         preparedStatement.setString(2, name);
+        preparedStatement.setString(3, password);
         int rowsAffected = preparedStatement.executeUpdate();
     }
 
     public BankClient getClientById(long id) throws SQLException {
-        //Statement stmt = connection.createStatement();
         String query = "SELECT * FROM bank_client WHERE id=?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setLong(1, id);
@@ -97,7 +97,6 @@ public class BankClientDAO {
     public BankClient getClientByName(String name) throws SQLException {
         String query = "SELECT * FROM bank_client WHERE name=?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        System.out.println("щас упаду");
         preparedStatement.setString(1, name);
         ResultSet result = preparedStatement.executeQuery();
         result.next();
@@ -112,7 +111,13 @@ public class BankClientDAO {
     }
 
     public void addClient(BankClient client) throws SQLException {
-        String query = "INSERT INTO bank";
+        String query = "INSERT INTO bank_client (name, password, money) VALUES(?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, client.getName());
+        preparedStatement.setString(2, client.getPassword());
+        preparedStatement.setLong(3, client.getMoney());
+        int rowsAffected = preparedStatement.executeUpdate();
+        /*
         String  nameT = client.getName();
         Statement statement = connection.createStatement();
             String tmpPassword = client.getPassword();
@@ -120,12 +125,12 @@ public class BankClientDAO {
             StringBuilder addClient = new StringBuilder("INSERT INTO bank_client (name, password, money) VALUES (").append(Start).append(nameT).append(Final).append(Start).
                     append(tmpPassword).append(Final).append(tmpMoney).append(");");
             statement.execute(addClient.toString());
-            statement.close();
+            statement.close(); */
     }
 
     public void createTable() throws SQLException {
         Statement stmt = connection.createStatement();
-        stmt.execute("create table if not exists bank_client (ID INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(256), password varchar(256), money bigint)");
+        stmt.execute("create table if not exists bank_client (id bigint auto_increment, name varchar(256), password varchar(256), money bigint, primary key (id))");
         stmt.close();
     }
 

@@ -3,6 +3,7 @@ package service;
 import dao.BankClientDAO;
 import exception.DBException;
 import model.BankClient;
+import org.eclipse.jetty.util.Scanner;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -84,7 +85,9 @@ public class BankClientService {
         else {
             BankClientDAO dao = getBankClientDAO();
             boolean isClientTrue;
-            isClientTrue = dao.validateClient(sender_name, sender_password);
+            //isClientTrue = dao.validateClient(sender_name, sender_password);
+            isClientTrue = validateClient(sender_name, sender_password);
+            System.out.println("я ис клиент и я " + isClientTrue + " " + sender_name + " " + sender_password);
             if(isClientTrue == false) return false;
 
             BankClient acceptor = dao.getClientByName(name);
@@ -123,21 +126,24 @@ public class BankClientService {
     }
 
     private static Connection getMysqlConnection() {
-        String connectionString = "jdbc:sqlite:/home/namor/test_sqlite.sql";
-        String driverName = "org.sqlite.JDBC";
+        try {
+            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
-        try {
-            Class.forName(driverName);
-        }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        Connection connection = null;
-        try {
-            connection = DriverManager.getConnection(connectionString);
+            StringBuilder url = new StringBuilder();
+
+            url.
+                    append("jdbc:mysql://").        //db type
+                    append("localhost:").           //host name
+                    append("3306/").                //port
+                    append("db_example?").          //db name
+                    append("user=root&").          //login
+                    append("password=logrys7");       //password
+
+            //System.out.println("URL: " + url + "\n");
+
+            Connection connection = DriverManager.getConnection(url.toString());
             return connection;
-        }
-        catch (SQLException e) {
+        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new IllegalStateException();
         }
