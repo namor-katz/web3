@@ -9,8 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class BankClientDAO {
-    private String Start = "'";
-    private String Final = "', ";
 
     private Connection connection;
 
