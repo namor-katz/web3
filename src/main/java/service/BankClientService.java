@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+//import com.mysql.jdbc.Driver;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -127,8 +128,8 @@ public class BankClientService {
 
     private static Connection getMysqlConnection() {
         try {
-            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
-
+//            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
+                DriverManager.registerDriver((Driver) Class.forName("com.mysql.cj.jdbc.Driver").newInstance());
             StringBuilder url = new StringBuilder();
 
             url.
