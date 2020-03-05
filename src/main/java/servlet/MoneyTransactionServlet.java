@@ -31,16 +31,16 @@ public class MoneyTransactionServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Map<String, Object> pageVariables = createPageVariablesMap(req);
-        String sender = req.getParameter("senderName");
-        String password = req.getParameter("senderPass");
+        String senderName = req.getParameter("senderName");
+        String senderPassword = req.getParameter("senderPass");
         Long money = Long.parseLong(req.getParameter("count"));
         String acceptor = req.getParameter("nameTo");
-        BankClient senderU = null;
+        BankClient sender = null;
         String result = "";
         boolean clientISExists;
-        boolean successTransaction;
+        boolean successTransaction = false;
         try {
-            senderU = bankClientService.getClientByName(sender);
+            sender = bankClientService.getClientByName(senderName);
             clientISExists = true;
         }
         catch (DBException e) {
@@ -49,7 +49,9 @@ public class MoneyTransactionServlet extends HttpServlet {
         }
 
         try {
-            successTransaction =  bankClientService.sendMoneyToClient(senderU, acceptor, money);
+            if (senderPassword.equals(sender.getPassword())) {
+                successTransaction = bankClientService.sendMoneyToClient(sender, acceptor, money);
+            }
             if (successTransaction == true) result = "The transaction was successful";
             else {
                 result ="transaction rejected";
