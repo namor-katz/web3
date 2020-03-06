@@ -86,9 +86,7 @@ public class BankClientService {
         else {
             BankClientDAO dao = getBankClientDAO();
             boolean isClientTrue;
-            //isClientTrue = dao.validateClient(sender_name, sender_password);
             isClientTrue = validateClient(sender_name, sender_password);
-            System.out.println("я ис клиент и я " + isClientTrue + " " + sender_name + " " + sender_password);
             if(isClientTrue == false) return false;
 
             BankClient acceptor = dao.getClientByName(name);
@@ -128,7 +126,6 @@ public class BankClientService {
 
     private static Connection getMysqlConnection() {
         try {
-//            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
                 DriverManager.registerDriver((Driver) Class.forName("com.mysql.cj.jdbc.Driver").newInstance());
             StringBuilder url = new StringBuilder();
 
@@ -140,7 +137,6 @@ public class BankClientService {
                     append("user=root&").          //login
                     append("password=logrys7");       //password
 
-            //System.out.println("URL: " + url + "\n");
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;

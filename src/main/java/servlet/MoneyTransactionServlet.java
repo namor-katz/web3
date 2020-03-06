@@ -36,15 +36,12 @@ public class MoneyTransactionServlet extends HttpServlet {
         Long money = Long.parseLong(req.getParameter("count"));
         String acceptor = req.getParameter("nameTo");
         BankClient sender = null;
-        String result = "";
-        boolean clientISExists;
+        String result;
         boolean successTransaction = false;
         try {
             sender = bankClientService.getClientByName(senderName);
-            clientISExists = true;
         }
         catch (DBException e) {
-            clientISExists = false;
             e.printStackTrace();
         }
 
